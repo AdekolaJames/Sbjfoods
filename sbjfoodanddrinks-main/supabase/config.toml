@@ -1,0 +1,7 @@
+project_id = "truipdrbayibyddlbxyo"
+
+[functions.public-order]
+verify_jwt = false
+
+[functions.public-menu]
+verify_jwt = false
