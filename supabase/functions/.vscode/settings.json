@@ -1,0 +1,5 @@
+{
+  "deno.enablePaths": ["supabase/functions"],
+  "deno.path": "C:\\Users\\USER\\AppData\\Local\\deno\\bin\\deno.exe",
+  "npm.packageManager": "npm"
+}
