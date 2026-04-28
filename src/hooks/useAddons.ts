@@ -36,7 +36,7 @@ export function useCreateAddon() {
         .from('menu_item_addons')
         .insert(addon)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
@@ -58,7 +58,7 @@ export function useUpdateAddon() {
         .update(updates)
         .eq('id', id)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 

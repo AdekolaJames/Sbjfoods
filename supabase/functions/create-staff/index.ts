@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
     const { data: { user: caller } } = await callerClient.auth.getUser();
     if (!caller) throw new Error("Unauthorized");
 
-    const adminClient = createClient(supabaseUrl, serviceRoleKey);
+    
 
     const { data: callerRole } = await adminClient
       .from("user_roles")

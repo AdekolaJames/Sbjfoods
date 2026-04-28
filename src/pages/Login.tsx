@@ -28,7 +28,11 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    const { error } = await signIn(email, password);
+
+    const cleanEmail = email.trim();
+
+const { error } = await signIn(cleanEmail, password);
+
     if (error) {
       toast({ title: 'Login failed', description: error.message, variant: 'destructive' });
     }
