@@ -5,8 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShoppingCart, Users, Building2, UtensilsCrossed } from 'lucide-react';
 
 export default function Dashboard() {
-  const { user, branch } = useAuth();
-
+  const { user, branch, signOut } = useAuth();
 const branchId = branch?.id;
 
   console.log("BRANCH ID:", branchId);
@@ -101,8 +100,14 @@ const branchId = branch?.id;
   });
 
   return (
-    <div className="space-y-6">
+  <div className="space-y-6">
 
+    <button
+      onClick={signOut}
+      className="px-4 py-2 bg-red-500 text-white rounded"
+    >
+      Logout
+    </button>
       {/* HEADER */}
       <div>
         <h1 className="text-3xl font-bold">

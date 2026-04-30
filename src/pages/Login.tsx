@@ -9,7 +9,10 @@ import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function Login() {
-  const { user, loading, signIn } = useAuth();
+  const auth = useAuth();
+console.log("AUTH CONTEXT:", auth);
+
+const { user, loading, signIn } = auth;
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,8 +33,11 @@ export default function Login() {
     setSubmitting(true);
 
     const cleanEmail = email.trim();
+const cleanPassword = password.trim();
 
-const { error } = await signIn(cleanEmail, password);
+if (user) return; // ⛔ stop if already logged in
+
+const { error } = await signIn(cleanEmail, cleanPassword);
 
     if (error) {
       toast({ title: 'Login failed', description: error.message, variant: 'destructive' });
@@ -73,7 +79,7 @@ const { error } = await signIn(cleanEmail, password);
                 required
               />
             </div>
-            <Button type="submit" className="w-full" disabled={submitting}>
+            <Button type="submit" className="w-full" disabled={submitting || !!user}>
               {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Sign In
             </Button>

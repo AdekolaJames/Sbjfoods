@@ -15,12 +15,15 @@ type AuthContextType = {
   loading: boolean;
   branch: Branch;
   branchId: string | null;
-  branches: any[]; // ✅ IMPORTANT
+  branches: any[];
   role: string | null;
   setBranch: (branch: Branch) => void;
   setBranchId: (id: string | null) => void;
-};
 
+  // ✅ ADD THIS LINE
+  signIn: (email: string, password: string) => Promise<any>;
+  signOut: () => Promise<void>;
+};
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuth = () => {
@@ -32,11 +35,24 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const signOut = async () => {
+  await supabase.auth.signOut();
+  setUser(null);
+};
 
   const [branch, setBranch] = useState<Branch>(null);
   const [branchId, setBranchId] = useState<string | null>(null);
   const [branches, setBranches] = useState<any[]>([]);
   const [role, setRole] = useState<string | null>(null);
+
+  const signIn = async (email: string, password: string) => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  return { data, error };
+};
 
   useEffect(() => {
   const getUserAndBranch = async () => {
@@ -99,8 +115,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     branches,
     role,
     setBranch,
-    setBranchId
+    setBranchId,
+    signIn,
+    signOut,
   };
+
+  console.log("AUTH CONTEXT FULL:", value);
 
   return (
     <AuthContext.Provider value={value}>
