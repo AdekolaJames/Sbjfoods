@@ -15,8 +15,14 @@ export function AppLayout() {
   // SAFE normalization (THIS FIXES YOUR ERROR)
   const branches = Array.isArray(data) ? data : [];
 
-  const activeBranch = branches.find(b => b?.id === branchId);
+const activeBranch = branchId
+  ? branches.find(b => b?.id === branchId)
+  : null;
 
+// 👇 ADD THESE LINES
+console.log("BRANCHES:", branches);
+console.log("ACTIVE BRANCH:", activeBranch);
+console.log("BRANCH ID:", branchId);
   const isAdmin = role === 'admin';
 
   const cleanName = (n?: string) =>
@@ -38,12 +44,12 @@ export function AppLayout() {
                 SBJ Foods & Drinks
               </h1>
 
-              {activeBranch && (
-                <Badge variant="outline" className="gap-1">
-                  <Building2 className="h-3 w-3" />
-                  {cleanName(activeBranch.name)}
-                </Badge>
-              )}
+              {activeBranch?.name && (
+  <Badge variant="outline" className="gap-1">
+    <Building2 className="h-3 w-3" />
+    {cleanName(String(activeBranch.name))}
+  </Badge>
+)}
             </div>
 
             <ThemeSwitcher />
