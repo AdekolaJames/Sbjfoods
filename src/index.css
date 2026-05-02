@@ -84,11 +84,12 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
     font-family: 'Inter', sans-serif;
   }
 
