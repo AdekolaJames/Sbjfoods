@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Building2 } from 'lucide-react';
 
 export function AppLayout() {
-  const { profile, branchId, role } = useAuth();
+  const { branchId, role } = useAuth();
 
   const { data } = useBranches();
 

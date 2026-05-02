@@ -48,7 +48,7 @@ const App = () => (
               <Route path="/shop" element={<ShopPage />} />
 
               {/* Protected routes inside layout */}
-              <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+              <Route element={<AppLayout />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/pos" element={<ProtectedRoute allowedRoles={['admin', 'cashier', 'waiter']}><POSPage /></ProtectedRoute>} />
                 <Route path="/orders" element={<ProtectedRoute allowedRoles={['admin', 'cashier', 'waiter', 'branch_manager']}><OrdersPage /></ProtectedRoute>} />
