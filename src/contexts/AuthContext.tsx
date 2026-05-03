@@ -7,7 +7,7 @@ type User = any;
 type Branch = {
   id: string;
   name: string;
-  [key: string]: any;
+  is_active?: boolean;
 } | null;
 
 type AuthContextType = {
@@ -19,11 +19,10 @@ type AuthContextType = {
   role: string | null;
   setBranch: (branch: Branch) => void;
   setBranchId: (id: string | null) => void;
-
-  // ✅ ADD THIS LINE
   signIn: (email: string, password: string) => Promise<any>;
   signOut: () => Promise<void>;
 };
+
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuth = () => {
@@ -35,77 +34,86 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const signOut = async () => {
-  await supabase.auth.signOut();
-  setUser(null);
-};
 
-  const [branch, setBranch] = useState<Branch | null>(null);
+  const [branch, setBranch] = useState<Branch>(null);
   const [branchId, setBranchId] = useState<string | null>(null);
   const [branches, setBranches] = useState<any[]>([]);
   const [role, setRole] = useState<string | null>(null);
 
-  const signIn = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setBranch(null);
+    setBranchId(null);
+  };
 
-  return { data, error };
-};
+  const signIn = async (email: string, password: string) => {
+    return await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+  };
 
   useEffect(() => {
-  const getUserAndBranch = async () => {
-    setLoading(true);
+    const initAuth = async () => {
+      setLoading(true);
 
-    const { data: { session } } = await supabase.auth.getSession();
-    const user = session?.user ?? null;
-    setUser(user);
+      const { data: { session } } = await supabase.auth.getSession();
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
 
-    if (user) {
-      // ✅ FETCH ROLE (FIXED)
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .limit(1)
-        .maybeSingle();
-
-      if (error) {
-        console.error("Role fetch error:", error);
+      if (!currentUser) {
+        setLoading(false);
+        return;
       }
 
-      setRole(data?.role || "admin");
+      // ROLE
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
 
-      // ✅ FETCH BRANCHES
-      const { data: branchData, error: branchError } = await supabase
+      setRole(roleData?.role ?? "admin");
+
+      // BRANCHES
+      const { data: branchData, error } = await supabase
         .from("branches")
         .select("*");
 
-      if (branchError) {
-        console.error("Error fetching branches:", branchError);
-      } else if (branchData && branchData.length > 0) {
+      if (error) {
+        console.error("Branch fetch error:", error);
+        setBranches([]);
+        setBranch(null);
+        setBranchId(null);
+      } else if (Array.isArray(branchData) && branchData.length > 0) {
         setBranches(branchData);
-        setBranch(branchData[0]);
-        setBranchId(branchData[0].id);
+
+        const defaultBranch = branchData[0];
+
+        setBranch(defaultBranch);
+        setBranchId(defaultBranch.id ?? null);
+      } else {
+        setBranches([]);
+        setBranch(null);
+        setBranchId(null);
       }
-    }
 
-    setLoading(false);
-  };
+      setLoading(false);
+    };
 
-  getUserAndBranch();
+    initAuth();
 
-  const { data: authListener } = supabase.auth.onAuthStateChange(
-    (_event, session) => {
-      setUser(session?.user ?? null);
-    }
-  );
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
 
-  return () => {
-    authListener.subscription.unsubscribe();
-  };
-}, []);
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
 
   const value: AuthContextType = {
     user,
@@ -120,7 +128,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     signOut,
   };
 
-  console.log("AUTH CONTEXT FULL:", value);
+  // DEBUG (safe)
+  console.log("AUTH DEBUG →", {
+    user,
+    branch,
+    branchId,
+    branches,
+    role,
+  });
 
   return (
     <AuthContext.Provider value={value}>
