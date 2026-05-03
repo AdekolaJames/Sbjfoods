@@ -77,28 +77,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setRole(roleData?.role ?? "admin");
 
       // BRANCHES
-      const { data: branchData, error } = await supabase
-        .from("branches")
-        .select("*");
+const { data: branchData, error } = await supabase
+  .from("branches")
+  .select("*");
 
-      if (error) {
-        console.error("Branch fetch error:", error);
-        setBranches([]);
-        setBranch(null);
-        setBranchId(null);
-      } else if (Array.isArray(branchData) && branchData.length > 0) {
-        setBranches(branchData);
+if (error) {
+  console.error("Branch fetch error:", error);
+  setBranches([]);
+  setBranch(null);
+  setBranchId(null);
+} else if (Array.isArray(branchData) && branchData.length > 0) {
 
-        const defaultBranch = branchData[0];
+  const savedBranchId = localStorage.getItem("branchId");
 
-        setBranch(defaultBranch);
-        setBranchId(defaultBranch.id ?? null);
-      } else {
-        setBranches([]);
-        setBranch(null);
-        setBranchId(null);
-      }
+  const selectedBranch =
+    branchData.find((b) => b.id === savedBranchId) ||
+    branchData[0];
 
+  setBranches(branchData);
+  setBranch(selectedBranch);
+  setBranchId(selectedBranch?.id || null);
+
+  if (selectedBranch?.id) {
+    localStorage.setItem("branchId", selectedBranch.id);
+  }
+
+} else {
+  setBranches([]);
+  setBranch(null);
+  setBranchId(null);
+}
       setLoading(false);
     };
 

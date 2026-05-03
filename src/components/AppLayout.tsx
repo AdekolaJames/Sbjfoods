@@ -16,9 +16,7 @@ export function AppLayout() {
   const branches = Array.isArray(data) ? data : [];
 
   // ✅ FIXED: correct branch logic
-  const activeBranch =
-    branch ?? branches.find((b) => b?.id === branchId) ?? null;
-
+  const activeBranch = branch;
   // Debug logs (safe)
   console.log("BRANCHES:", branches);
   console.log("ACTIVE BRANCH:", activeBranch);
@@ -45,12 +43,12 @@ export function AppLayout() {
               </h1>
 
               {/* SAFE RENDER */}
-              {activeBranch?.name && (
-                <Badge variant="outline" className="gap-1">
-                  <Building2 className="h-3 w-3" />
-                  {cleanName(activeBranch.name)}
-                </Badge>
-              )}
+              {activeBranch?.name ? (
+  <Badge variant="outline" className="gap-1">
+    <Building2 className="h-3 w-3" />
+    {cleanName(activeBranch.name)}
+  </Badge>
+) : null}
             </div>
 
             <ThemeSwitcher />
