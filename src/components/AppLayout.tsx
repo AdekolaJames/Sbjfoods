@@ -9,15 +9,12 @@ import { Building2 } from 'lucide-react';
 
 export function AppLayout() {
   const { branchId, role, branch } = useAuth();
-
   const { data } = useBranches();
 
-  // SAFE normalization
   const branches = Array.isArray(data) ? data : [];
 
-  // ✅ FIXED: correct branch logic
-  const activeBranch = branch; // redeploy trigger
-  // Debug logs (safe)
+  const activeBranch = branch;
+
   console.log("BRANCHES:", branches);
   console.log("ACTIVE BRANCH:", activeBranch);
   console.log("BRANCH ID:", branchId);
@@ -25,7 +22,7 @@ export function AppLayout() {
   const cleanName = (n?: string) =>
     (n || '').replace('SBJ Foods and Drinks ', '').trim() || n || 'Branch';
 
-  return <div>APP SAFE MODE</div>;
+  return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
@@ -42,13 +39,12 @@ export function AppLayout() {
                 SBJ Foods & Drinks
               </h1>
 
-              {/* SAFE RENDER */}
-              {activeBranch?.name ? (
-  <Badge variant="outline" className="gap-1">
-    <Building2 className="h-3 w-3" />
-    {cleanName(activeBranch.name)}
-  </Badge>
-) : null}
+              {activeBranch?.name && (
+                <Badge variant="outline" className="gap-1">
+                  <Building2 className="h-3 w-3" />
+                  {cleanName(activeBranch.name)}
+                </Badge>
+              )}
             </div>
 
             <ThemeSwitcher />
@@ -62,4 +58,5 @@ export function AppLayout() {
         </div>
       </div>
     </SidebarProvider>
+  );
 }
