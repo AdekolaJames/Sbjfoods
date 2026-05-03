@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   setUser(null);
 };
 
-  const [branch, setBranch] = useState<Branch>(null);
+  const [branch, setBranch] = useState<Branch | null>(null);
   const [branchId, setBranchId] = useState<string | null>(null);
   const [branches, setBranches] = useState<any[]>([]);
   const [role, setRole] = useState<string | null>(null);

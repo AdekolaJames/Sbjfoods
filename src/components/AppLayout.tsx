@@ -8,22 +8,21 @@ import { Badge } from '@/components/ui/badge';
 import { Building2 } from 'lucide-react';
 
 export function AppLayout() {
-  const { branchId, role } = useAuth();
+  const { branchId, role, branch } = useAuth();
 
   const { data } = useBranches();
 
-  // SAFE normalization (THIS FIXES YOUR ERROR)
+  // SAFE normalization
   const branches = Array.isArray(data) ? data : [];
 
-const activeBranch = branchId
-  ? branches.find(b => b?.id === branchId)
-  : null;
+  // ✅ FIXED: correct branch logic
+  const activeBranch =
+    branch ?? branches.find((b) => b?.id === branchId) ?? null;
 
-// 👇 ADD THESE LINES
-console.log("BRANCHES:", branches);
-console.log("ACTIVE BRANCH:", activeBranch);
-console.log("BRANCH ID:", branchId);
-  const isAdmin = role === 'admin';
+  // Debug logs (safe)
+  console.log("BRANCHES:", branches);
+  console.log("ACTIVE BRANCH:", activeBranch);
+  console.log("BRANCH ID:", branchId);
 
   const cleanName = (n?: string) =>
     (n || '').replace('SBJ Foods and Drinks ', '').trim() || n || 'Branch';
@@ -35,6 +34,7 @@ console.log("BRANCH ID:", branchId);
 
         <div className="flex-1 flex flex-col overflow-hidden">
 
+          {/* HEADER */}
           <header className="h-14 flex items-center justify-between border-b px-4">
 
             <div className="flex items-center gap-3">
@@ -44,17 +44,19 @@ console.log("BRANCH ID:", branchId);
                 SBJ Foods & Drinks
               </h1>
 
+              {/* SAFE RENDER */}
               {activeBranch?.name && (
-  <Badge variant="outline" className="gap-1">
-    <Building2 className="h-3 w-3" />
-    {cleanName(String(activeBranch.name))}
-  </Badge>
-)}
+                <Badge variant="outline" className="gap-1">
+                  <Building2 className="h-3 w-3" />
+                  {cleanName(activeBranch.name)}
+                </Badge>
+              )}
             </div>
 
             <ThemeSwitcher />
           </header>
 
+          {/* CONTENT */}
           <main className="flex-1 overflow-auto p-6">
             <Outlet />
           </main>
