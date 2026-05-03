@@ -16,7 +16,7 @@ export function AppLayout() {
   const branches = Array.isArray(data) ? data : [];
 
   // ✅ FIXED: correct branch logic
-  const activeBranch = branch;
+  const activeBranch = branch; // redeploy trigger
   // Debug logs (safe)
   console.log("BRANCHES:", branches);
   console.log("ACTIVE BRANCH:", activeBranch);
@@ -25,7 +25,7 @@ export function AppLayout() {
   const cleanName = (n?: string) =>
     (n || '').replace('SBJ Foods and Drinks ', '').trim() || n || 'Branch';
 
-  return (
+  return <div>APP SAFE MODE</div>;
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
@@ -62,5 +62,4 @@ export function AppLayout() {
         </div>
       </div>
     </SidebarProvider>
-  );
 }
